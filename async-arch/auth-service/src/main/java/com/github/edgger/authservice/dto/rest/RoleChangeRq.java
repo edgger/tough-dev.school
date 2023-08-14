@@ -1,6 +1,6 @@
-package com.github.edgger.authservice.dto;
+package com.github.edgger.authservice.dto.rest;
 
-import com.github.edgger.authservice.entity.AccountRoles;
+import com.github.edgger.authservice.entity.AccountRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RoleChangeRq {
     private String username;
-    private AccountRoles accountRoles;
+    private AccountRole accountRole;
 }

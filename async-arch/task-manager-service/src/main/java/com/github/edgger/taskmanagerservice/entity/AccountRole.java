@@ -1,8 +1,8 @@
-package com.github.edgger.authservice.entity;
+package com.github.edgger.taskmanagerservice.entity;
 
 import org.springframework.security.core.GrantedAuthority;
 
-public enum AccountRoles implements GrantedAuthority {
+public enum AccountRole implements GrantedAuthority {
     ADMIN, MANAGER, WORKER;
 
     @Override

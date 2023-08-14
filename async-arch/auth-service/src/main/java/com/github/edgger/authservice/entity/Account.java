@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "accounts")
+@Table(name = "accounts", schema = "auth_service")
 public class Account implements UserDetails {
 
     @Id
@@ -24,7 +24,7 @@ public class Account implements UserDetails {
     private String username;
     private String password;
     @Enumerated(EnumType.STRING)
-    private AccountRoles role;
+    private AccountRole role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

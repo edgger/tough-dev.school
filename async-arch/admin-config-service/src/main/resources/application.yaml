@@ -8,8 +8,7 @@ spring:
 
 
 server:
-  # 0 = random for local dev
-  port: 0
+  port: 8079
 management:
   tracing:
     sampling:
@@ -52,7 +51,7 @@ management:
       enabled: true
   zipkin:
     tracing:
-      endpoint: http://zipkin:9411/api/v2/spans
+      endpoint: http://localhost:9411/api/v2/spans
 
 springdoc:
   api-docs:

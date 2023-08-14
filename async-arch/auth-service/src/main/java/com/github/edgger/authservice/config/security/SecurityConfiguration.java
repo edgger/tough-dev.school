@@ -41,7 +41,7 @@ public class SecurityConfiguration {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/login", "/error", "/accounts/register");
+        return (web) -> web.ignoring().requestMatchers("/login", "/error", "/accounts/register", "/auth/jwks.json");
     }
 
     protected JwtAuthenticationConverter authenticationConverter() {

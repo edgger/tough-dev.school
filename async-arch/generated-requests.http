@@ -1,0 +1,66 @@
+###
+// @no-log
+// @no-cookie-jar
+POST http://localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin-popug&password=1234
+
+###
+// @no-log
+// @no-cookie-jar
+POST http://localhost:8080/accounts/daf252ef-32e4-4683-b883-743bc398faca/roles/change
+Authorization: Bearer eyJraWQiOiJqd3RzaWduaW5nIiwiYWxnIjoiUlMyNTYiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJhZG1pbi1wb3B1ZyIsInJvbGVzIjoiQURNSU4iLCJ1c2VySWQiOiJjZGMxYTI3Ny04N2M4LTRjODgtYTVjYy1iZDk4MWIyYTRmN2EiLCJ1c2VybmFtZSI6ImFkbWluLXBvcHVnIiwibmJmIjoxNjkyMDQzMjYzLCJleHAiOjE2OTIxMjk2NjN9.n7PDNfljbWn62hkixG2tZRycG8wHxIUTYa5C32yi8gxfJDQmjI1frnimes2GKgyzisNIAQ-g1HDAaiv3jdciNavWog_SgGiz-7IduFyosnyGs1b4IbIuPTxDMr_3ATowHBaMLnCjV-xV5CMJv9az53C1Sm40SCKrXoaAusgUVzV2dBLpmgDkQm3g0_s4v4eAsMY5-SWS8k08-l4N6GsG7HSr53bE3NYnvkPCIzFOsSMQ11N7pja3be3k6T2qqzB5m0quPqc4EbV0y1cxGucs1rDZraCprrgkgkTBzRtGmbBbC8Ddx4SV98AYMBrfIq-GpB_GkKU5HY85Fi-z45zMWA
+Content-Type: application/json
+
+"ADMIN"
+
+###
+// @no-log
+// @no-cookie-jar
+POST http://localhost:8080/accounts/register
+Content-Type: application/json
+
+{
+  "username": "popug-worker1",
+  "password": "1234"
+}
+
+###
+// @no-log
+// @no-cookie-jar
+POST http://localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=popug-worker1&password=1234
+
+###
+// @no-log
+// @no-cookie-jar
+POST http://localhost:8082/tasks
+Content-Type: application/json
+Authorization: Bearer eyJraWQiOiJqd3RzaWduaW5nIiwiYWxnIjoiUlMyNTYiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJwb3B1Zy13b3JrZXIxIiwicm9sZXMiOiJXT1JLRVIiLCJ1c2VySWQiOiJkYWYyNTJlZi0zMmU0LTQ2ODMtYjg4My03NDNiYzM5OGZhY2EiLCJ1c2VybmFtZSI6InBvcHVnLXdvcmtlcjEiLCJuYmYiOjE2OTIwNDE2MDgsImV4cCI6MTY5MjEyODAwOH0.kgcaAuHDcujTEza28ttrAA2reN0XHhx021fc7_GD-2zJMMBk9k5G8j4y8mMcrx6AWwWgA3N0oy2pFFkugY2n4Z-B-aHAoA26LVTQIMwkaxcjvTUlVQztPsGjOCwl-WlrXhtlO20xiYbz-7wR6f6sXh4GRwrsb_cQKoXDRB1eS6DFPclcH9w54fiILuSqg8fFbU3aBwBZNvJoQRpBnSDX5ctFWgGjy4ZCffKnH1ZzKdlihIcrjJsM_6zpxWlrrPZT9su5igqD4WWuzdsy4O9NZphV2BlyLRWyEA-ZIk2mm_TNZc4z8GGJR0TJHcCgz6ZCYzngG7cTuc74wi7U-HvZMw
+
+{
+  "description": "first task"
+}
+
+###
+// @no-log
+// @no-cookie-jar
+POST http://localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=boss-popug&password=1234
+
+###
+// @no-log
+// @no-cookie-jar
+POST http://localhost:8082/tasks/shuffle
+Authorization: Bearer eyJraWQiOiJqd3RzaWduaW5nIiwiYWxnIjoiUlMyNTYiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJib3NzLXBvcHVnIiwicm9sZXMiOiJNQU5BR0VSIiwidXNlcklkIjoiNTZmYTBmMjgtMWVhZC00YmRiLTllMzctOGNkM2E2N2I5NDg4IiwidXNlcm5hbWUiOiJib3NzLXBvcHVnIiwibmJmIjoxNjkyMDQyMzIwLCJleHAiOjE2OTIxMjg3MjB9.SR-8fvYtFCJhmvfgTy2tQf1SacG_5ir-g3usCY4ab83z9BFq7rg3m59EgYp0imdI_X4-WjesrlD_jOlvPJqUwLhYjQFflTYjuGfSPArolptEffvsSlg8XeCYTF3EhZSGWr5I73ShUmuC-uc3jhHAUMFlzTxqCer-9AD9gD_OmRpQ3qBKAog4aJY3Y0AyxIYcMAPLKCEsNDNBPs26pMn35yTEY0w8P1ncShXsXTxKgyk_jiiVSSjsCHrOShih3tkB3QLlu-GIRqKotOtgdMhIi-aHkyVrY-qOiV3xuUd9Xr_XRwaq5CUYX5Vp1_-0etKFJ1b9VWPGWOpS4DUiyxPAYw
+
+###
+// @no-log
+// @no-cookie-jar
+POST http://localhost:8082/tasks/917b5a95-221a-45b9-9267-190d4932f1fe/complete
+Authorization: Bearer eyJraWQiOiJqd3RzaWduaW5nIiwiYWxnIjoiUlMyNTYiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJwb3B1Zy13b3JrZXIxIiwicm9sZXMiOiJXT1JLRVIiLCJ1c2VySWQiOiI1NDllNWVkOC03NjliLTQ3ZWYtYjc3Yi0xZTk5OWNhZjk0YmYiLCJ1c2VybmFtZSI6InBvcHVnLXdvcmtlcjEiLCJuYmYiOjE2OTIwNDM3NzAsImV4cCI6MTY5MjEzMDE3MH0.FrV9xgsRxosFgUSo-85MqvKGYMX4B5G5Tw3gkmDU68p3n5RYp3Mm9qgitoQIn_ZeDjMT4rm_zCKOb0giBh1kpp-RAUAbyCF0nvRdylTOGrE3uKVFCiLRJBzroIID2xcJADdDUqt64B9QbH7FH5Zq3x_3nimg4uc0VzWI8gZtci64gZynvIQtQLGJ_DV5PQl1AruXDLpK0wR9hei6U-OAFsNRRJT85Yr4WuR_oTl2H5qD4CA1GcCYJI-H-cO_LIaT4udbWR-FpTGI7DgFokgK4l8rtzUADjcqnOw1vogdHshGgEFtdGZZEDwFZNtwluXsuI_JAX0J0qJzvLIRds1bZQ

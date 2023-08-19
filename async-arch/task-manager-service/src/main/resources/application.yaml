@@ -1,0 +1,123 @@
+# Binding From Environment Variables https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables
+
+spring:
+  main:
+    banner-mode: off
+  application:
+    name: task-manager-service
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/mydatabase?currentSchema=task_manager_service"
+    username: "myuser"
+    password: "secret"
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: none
+# https://www.effectivesoft.by/news/spring-authorization-server-%D0%BF%D0%BB%D1%8E%D1%81%D1%8B-%D0%BC%D0%B8%D0%BD%D1%83%D1%81%D1%8B-%D0%BA%D0%B0%D0%BA-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D1%8C
+  sql:
+    init:
+      mode: always
+  kafka:
+    bootstrap-servers: localhost:29092
+    client-id: task-manager-service
+    properties:
+      #Server host name verification is disabled by setting ssl.endpoint.identification.algorithm to an empty string
+      ssl.endpoint.identification.algorithm:
+    producer:
+      retries: 0
+      acks: 1
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: task-manager-service
+      auto-offset-reset: earliest
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      enable-auto-commit: false
+      properties:
+        partition.assignment.strategy: org.apache.kafka.clients.consumer.CooperativeStickyAssignor
+        spring.json.trusted.packages: "*"
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+    listener:
+      ack-mode: manual
+
+app:
+  kafka:
+    producer:
+      topics:
+        task-created: task.created
+        task-assigned: task.assigned
+        task-completed: task.completed
+    consumer:
+      topics:
+        account-created: account.created
+  security:
+    jwk-set-uri: "http://localhost:8080/auth/jwks.json"
+
+server:
+  port: 8082
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  health:
+    defaults:
+      # better create custom HealthIndicator's
+      enabled: true
+  endpoint:
+    health:
+      enabled: true
+      show-details: never
+    prometheus:
+      enabled: true
+    loggers:
+      # for boot-admin
+      enabled: true
+    info:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: info, health, prometheus, loggers, openapi, swagger-ui
+      base-path: /service
+      path-mapping:
+        health: healthcheck
+    # fot security
+    enabled-by-default: false
+  server:
+    # 0 = random for local dev
+    port: 0
+  info:
+    git:
+      enabled: true
+    java:
+      enabled: true
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+  show-actuator: false
+  use-management-port: true
+
+# traceID and spanId are predefined MDC keys - we want the logs to include them
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+  level:
+    org:
+      springframework:
+        security: DEBUG

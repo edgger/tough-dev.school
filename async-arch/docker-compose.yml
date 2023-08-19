@@ -1,0 +1,187 @@
+version: "3.9"
+services:
+
+  zipkin:
+    image: "openzipkin/zipkin:2.24.2"
+    ports:
+      - "9411"
+
+  prometheus:
+    image: "prom/prometheus:2.37.9"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./_compose-files/prometheus/:/etc/prometheus/
+    command:
+      - --config.file=/etc/prometheus/prometheus.yaml
+    restart: unless-stopped
+
+  grafana:
+    image: "grafana/grafana:9.5.7"
+    ports:
+      - "3000:3000"
+    environment:
+      - "GF_PATHS_PROVISIONING=/etc/grafana/custom/provisioning"
+    volumes:
+      - ./_compose-files/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./_compose-files/grafana/provisioning/:/etc/grafana/custom/provisioning/
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+  zookeeper:
+    image: "confluentinc/cp-zookeeper:7.2.6"
+    ports:
+      - "22181:2181"
+    environment:
+      - "ZOOKEEPER_CLIENT_PORT=2181"
+      - "ZOOKEEPER_TICK_TIME=2000"
+
+  kafka:
+    image: "confluentinc/cp-kafka:7.2.6"
+    ports:
+      - "29092:29092"
+    hostname: kafka
+    environment:
+      - "KAFKA_BROKER_ID=1"
+      - "KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181"
+      - "KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:29092"
+      - "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT"
+      - "KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT"
+      - "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=2"
+    depends_on:
+      - zookeeper
+
+  kafka2:
+    image: "confluentinc/cp-kafka:7.2.6"
+    ports:
+      - "29093:29092"
+    hostname: kafka2
+    environment:
+      - "KAFKA_BROKER_ID=2"
+      - "KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181"
+      - "KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka2:29093"
+      - "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT"
+      - "KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT"
+      - "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=2"
+    depends_on:
+      - zookeeper
+
+  kafka-ui:
+    image: "provectuslabs/kafka-ui:v0.7.1"
+    ports:
+      - "29090:8080"
+    restart: always
+    environment:
+      - "KAFKA_CLUSTERS_0_NAME=local"
+      - "KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092,kafka2:29093"
+      - "KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181"
+    depends_on:
+      - kafka
+      - kafka2
+      - zookeeper
+
+  admin-config-service:
+    image: "admin-config-service:0.0.1-SNAPSHOT"
+    ports:
+      - "8079:8080"
+      - "28079:9090"
+    environment:
+      - "SPRING_SERVER_PORT=8080"
+      - "SPRING_MANAGEMENT_PORT=9090"
+      - "SPRING_DATASOURCE_URL=jdbc:postgresql://admin-config-service-db:5432/mydatabase"
+      - "SPRING_MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans"
+    depends_on:
+      - kafka
+      - kafka2
+      - zookeeper
+      - zipkin
+      - admin-config-service-db
+
+  admin-config-service-db:
+    image: "postgres:13.11"
+    ports:
+      - "5431:5432"
+    environment:
+      - "POSTGRES_DB=mydatabase"
+      - "POSTGRES_PASSWORD=secret"
+      - "POSTGRES_USER=myuser"
+
+  auth-service:
+    image: "auth-service:0.0.1-SNAPSHOT"
+    ports:
+      - "8080:8080"
+      - "28080:9090"
+    environment:
+      - "SPRING_SERVER_PORT=8080"
+      - "SPRING_MANAGEMENT_PORT=9090"
+      - "SPRING_DATASOURCE_URL=jdbc:postgresql://auth-service-db:5432/mydatabase"
+      - "SPRING_MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans"
+    depends_on:
+      - kafka
+      - kafka2
+      - zookeeper
+      - zipkin
+      - auth-service-db
+
+  auth-service-db:
+    image: "postgres:13.11"
+    ports:
+      - "5432:5432"
+    environment:
+      - "POSTGRES_DB=mydatabase"
+      - "POSTGRES_PASSWORD=secret"
+      - "POSTGRES_USER=myuser"
+
+  billing-service:
+    image: "billing-service:0.0.1-SNAPSHOT"
+    ports:
+      - "8081:8080"
+      - "28081:9090"
+    environment:
+      - "SPRING_SERVER_PORT=8080"
+      - "SPRING_MANAGEMENT_PORT=9090"
+      - "SPRING_DATASOURCE_URL=jdbc:postgresql://billing-service-db:5432/mydatabase"
+      - "SPRING_MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans"
+    depends_on:
+      - kafka
+      - kafka2
+      - zookeeper
+      - zipkin
+      - billing-service-db
+
+  billing-service-db:
+    image: "postgres:13.11"
+    ports:
+      - "5433:5432"
+    environment:
+      - "POSTGRES_DB=mydatabase"
+      - "POSTGRES_PASSWORD=secret"
+      - "POSTGRES_USER=myuser"
+
+  task-manager-service:
+    image: "task-manager-service:0.0.1-SNAPSHOT"
+    ports:
+      - "8082:8080"
+      - "28082:9090"
+    environment:
+      - "SPRING_SERVER_PORT=8080"
+      - "SPRING_MANAGEMENT_PORT=9090"
+      - "SPRING_DATASOURCE_URL=jdbc:postgresql://task-manager-service-db:5432/mydatabase"
+      - "SPRING_KAFKA_BOOTSTRAPSERVERS=kafka:29092 kafka2:29092"
+      - "SPRING_MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans"
+    depends_on:
+      - kafka
+      - kafka2
+      - zookeeper
+      - zipkin
+      - task-manager-service-db
+
+  task-manager-service-db:
+    image: "postgres:13.11"
+    ports:
+      - "5434:5432"
+    environment:
+      - "POSTGRES_DB=mydatabase"
+      - "POSTGRES_PASSWORD=secret"
+      - "POSTGRES_USER=myuser"

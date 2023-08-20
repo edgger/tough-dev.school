@@ -1,9 +1,9 @@
 package com.github.edgger.billingservice.service;
 
-import com.github.edgger.billingservice.dto.kafka.AccountCreatedEvt;
-import com.github.edgger.billingservice.dto.kafka.TaskAssignedEvt;
-import com.github.edgger.billingservice.dto.kafka.TaskCompletedEvt;
-import com.github.edgger.billingservice.dto.kafka.TaskCreatedEvt;
+import com.github.edgger.AccountCreatedMsgV1;
+import com.github.edgger.TaskAssignedMsgV1;
+import com.github.edgger.TaskCompletedMsgV1;
+import com.github.edgger.TaskCreatedMsgV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -24,7 +24,7 @@ public class KafkaConsumerService {
     @KafkaListener(topics = {"${app.kafka.consumer.topics.account-created}"},
             groupId = "billing-service.account-created",
             properties = {"spring.json.value.default.type=com.github.edgger.billingservice.dto.kafka.AccountCreatedEvt"})
-    public void consume(@Payload AccountCreatedEvt payload,
+    public void consume(@Payload AccountCreatedMsgV1 payload,
                         @Headers Map<String, String> headers,
                         Acknowledgment acknowledgment) {
         log.info("=> consumed {}", payload);
@@ -34,7 +34,7 @@ public class KafkaConsumerService {
 
     @KafkaListener(topics = {"${app.kafka.consumer.topics.task-created}"},
             groupId = "billing-service.task-created")
-    public void consume(@Payload TaskCreatedEvt payload,
+    public void consume(@Payload TaskCreatedMsgV1 payload,
                         @Headers Map<String, String> headers,
                         Acknowledgment acknowledgment) {
         log.info("=> consumed {}", payload);
@@ -44,7 +44,7 @@ public class KafkaConsumerService {
 
     @KafkaListener(topics = {"${app.kafka.consumer.topics.task-assigned}"},
             groupId = "billing-service.task-assigned")
-    public void consume(@Payload TaskAssignedEvt payload,
+    public void consume(@Payload TaskAssignedMsgV1 payload,
                         @Headers Map<String, String> headers,
                         Acknowledgment acknowledgment) {
         log.info("=> consumed {}", payload);
@@ -54,7 +54,7 @@ public class KafkaConsumerService {
 
     @KafkaListener(topics = {"${app.kafka.consumer.topics.task-completed}"},
             groupId = "billing-service.task-completed")
-    public void consume(@Payload TaskCompletedEvt payload,
+    public void consume(@Payload TaskCompletedMsgV1 payload,
                         @Headers Map<String, String> headers,
                         Acknowledgment acknowledgment) {
         log.info("=> consumed {}", payload);

@@ -1,8 +1,8 @@
 package com.github.edgger.taskmanagerservice.service;
 
-import com.github.edgger.taskmanagerservice.dto.kafka.TaskAssignedEvt;
-import com.github.edgger.taskmanagerservice.dto.kafka.TaskCompletedEvt;
-import com.github.edgger.taskmanagerservice.dto.kafka.TaskCreatedEvt;
+import com.github.edgger.TaskAssignedMsgV1;
+import com.github.edgger.TaskCompletedMsgV1;
+import com.github.edgger.TaskCreatedMsgV1;
 import com.github.edgger.taskmanagerservice.dto.rest.NewTaskRq;
 import com.github.edgger.taskmanagerservice.entity.Account;
 import com.github.edgger.taskmanagerservice.entity.Task;
@@ -36,7 +36,7 @@ public class TaskService {
         Account randomAccount = new Account(randomId, null);
         Task task = new Task(null, rq.getDescription(), TaskStatus.INPROGRESS, randomAccount);
         task = taskRepository.save(task);
-        TaskCreatedEvt evt = new TaskCreatedEvt(task.getId().toString(), task.getAccount().getId().toString(), task.getDescription());
+        TaskCreatedMsgV1 evt = new TaskCreatedMsgV1(task.getId().toString(), task.getAccount().getId().toString(), task.getDescription());
         kafkaProducer.sendTaskCreatedEvent(evt);
     }
 
@@ -48,7 +48,7 @@ public class TaskService {
             for (UUID taskId : allTaskIds) {
                 UUID randomWorkerId = allWorkerIds.get(ThreadLocalRandom.current().nextInt(allWorkerIds.size()));
                 taskRepository.setAccountId(taskId, randomWorkerId);
-                TaskAssignedEvt evt = new TaskAssignedEvt(taskId.toString(), randomWorkerId.toString());
+                TaskAssignedMsgV1 evt = new TaskAssignedMsgV1(taskId.toString(), randomWorkerId.toString());
                 kafkaProducer.sendTaskAssignedEvent(evt);
             }
         }
@@ -60,11 +60,11 @@ public class TaskService {
         UUID userId = UUID.fromString(userIdString);
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task with id=" + taskIdString + " and for account id=" + userIdString + " not found"));
-        if (!Objects.equals(task.getAccount().getId(), userId)){
+        if (!Objects.equals(task.getAccount().getId(), userId)) {
             throw new IllegalArgumentException("Someone else's task");
         }
         task.setStatus(TaskStatus.COMPLETED);
-        TaskCompletedEvt evt = new TaskCompletedEvt(taskIdString);
+        TaskCompletedMsgV1 evt = new TaskCompletedMsgV1(taskIdString);
         kafkaProducer.sendTaskCompletedEvent(evt);
     }
 }

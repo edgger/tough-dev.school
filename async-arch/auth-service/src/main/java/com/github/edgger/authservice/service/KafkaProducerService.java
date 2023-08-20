@@ -1,7 +1,7 @@
 package com.github.edgger.authservice.service;
 
-import com.github.edgger.authservice.dto.kafka.AccountCreatedEvt;
-import com.github.edgger.authservice.dto.kafka.AccountRoleChangedEvt;
+import com.github.edgger.AccountCreatedMsgV1;
+import com.github.edgger.AccountRoleChangedMsgV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -17,9 +17,9 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class KafkaProducerService {
 
-    private final KafkaTemplate<String, AccountCreatedEvt> kafkaTemplateAccountCreated;
+    private final KafkaTemplate<String, AccountCreatedMsgV1> kafkaTemplateAccountCreated;
 
-    private final KafkaTemplate<String, AccountRoleChangedEvt> kafkaTemplateAccountRoleChanged;
+    private final KafkaTemplate<String, AccountRoleChangedMsgV1> kafkaTemplateAccountRoleChanged;
 
     @Value("${app.kafka.producer.topics.account-created}")
     private String topicAccountCreated;
@@ -27,9 +27,9 @@ public class KafkaProducerService {
     @Value("${app.kafka.producer.topics.account-role-changed}")
     private String topicAccountRoleChanged;
 
-    public void sendAccountCreatedEvent(AccountCreatedEvt evt) {
-        ProducerRecord<String, AccountCreatedEvt> record = new ProducerRecord<>(topicAccountCreated, evt.getAccountId(), evt);
-        CompletableFuture<SendResult<String, AccountCreatedEvt>> future = kafkaTemplateAccountCreated.send(record);
+    public void sendAccountCreatedEvent(AccountCreatedMsgV1 evt) {
+        ProducerRecord<String, AccountCreatedMsgV1> record = new ProducerRecord<>(topicAccountCreated, evt.getAccountId().toString(), evt);
+        CompletableFuture<SendResult<String, AccountCreatedMsgV1>> future = kafkaTemplateAccountCreated.send(record);
         future.whenComplete((result, ex) -> {
             if (ex == null) {
                 log.info("Sent message=[" + evt +
@@ -41,9 +41,9 @@ public class KafkaProducerService {
         });
     }
 
-    public void sendAccountRoleChangedEvent(AccountRoleChangedEvt evt) {
-        ProducerRecord<String, AccountRoleChangedEvt> record = new ProducerRecord<>(topicAccountCreated, evt.getAccountId(), evt);
-        CompletableFuture<SendResult<String, AccountRoleChangedEvt>> future = kafkaTemplateAccountRoleChanged.send(record);
+    public void sendAccountRoleChangedEvent(AccountRoleChangedMsgV1 evt) {
+        ProducerRecord<String, AccountRoleChangedMsgV1> record = new ProducerRecord<>(topicAccountRoleChanged, evt.getAccountId().toString(), evt);
+        CompletableFuture<SendResult<String, AccountRoleChangedMsgV1>> future = kafkaTemplateAccountRoleChanged.send(record);
         future.whenComplete((result, ex) -> {
             if (ex == null) {
                 log.info("Sent message=[" + evt +

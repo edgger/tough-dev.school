@@ -9,6 +9,7 @@
     <name>async-arch aggregate pom</name>
 
     <modules>
+        <module>schema-lib</module>
         <module>admin-config-service</module>
         <module>auth-service</module>
         <module>billing-service</module>

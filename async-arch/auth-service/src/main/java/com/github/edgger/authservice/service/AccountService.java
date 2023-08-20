@@ -1,7 +1,7 @@
 package com.github.edgger.authservice.service;
 
-import com.github.edgger.authservice.dto.kafka.AccountCreatedEvt;
-import com.github.edgger.authservice.dto.kafka.AccountRoleChangedEvt;
+import com.github.edgger.AccountCreatedMsgV1;
+import com.github.edgger.AccountRoleChangedMsgV1;
 import com.github.edgger.authservice.dto.rest.RegisterWorkerAccountRq;
 import com.github.edgger.authservice.entity.Account;
 import com.github.edgger.authservice.entity.AccountRole;
@@ -35,8 +35,8 @@ public class AccountService implements UserDetailsService {
                 passwordEncoder.encode(rq.getPassword()),
                 AccountRole.WORKER);
         account = accountRepository.save(account);
-        AccountCreatedEvt evt = new AccountCreatedEvt(account.getId().toString(), account.getRole());
-        kafkaProducer.sendAccountCreatedEvent(evt);
+        AccountCreatedMsgV1 msgV1 = new AccountCreatedMsgV1(account.getId().toString(), account.getRole().toString());
+        kafkaProducer.sendAccountCreatedEvent(msgV1);
     }
 
     @Transactional
@@ -44,8 +44,8 @@ public class AccountService implements UserDetailsService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new EntityNotFoundException(accountId.toString()));
         account.setRole(role);
-        AccountRoleChangedEvt evt = new AccountRoleChangedEvt(account.getId().toString(), account.getRole());
-        kafkaProducer.sendAccountRoleChangedEvent(evt);
+        AccountRoleChangedMsgV1 msgV1 = new AccountRoleChangedMsgV1(account.getId().toString(), account.getRole().toString());
+        kafkaProducer.sendAccountRoleChangedEvent(msgV1);
     }
 
     public Optional<Account> findByUsername(String username) {

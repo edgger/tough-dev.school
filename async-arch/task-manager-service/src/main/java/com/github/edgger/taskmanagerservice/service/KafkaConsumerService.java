@@ -1,6 +1,6 @@
 package com.github.edgger.taskmanagerservice.service;
 
-import com.github.edgger.taskmanagerservice.dto.kafka.AccountCreatedEvt;
+import com.github.edgger.AccountCreatedMsgV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -21,7 +21,7 @@ public class KafkaConsumerService {
     @KafkaListener(topics = {"${app.kafka.consumer.topics.account-created}"},
             groupId = "task-manager-service.account-created",
             properties = {"spring.json.value.default.type=com.github.edgger.taskmanagerservice.dto.kafka.AccountCreatedEvt"})
-    public void consume(@Payload AccountCreatedEvt payload,
+    public void consume(@Payload AccountCreatedMsgV1 payload,
                         @Headers Map<String, String> headers,
                         Acknowledgment acknowledgment) {
         log.info("=> consumed {}", payload);

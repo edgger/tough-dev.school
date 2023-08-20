@@ -1,0 +1,9 @@
+{
+  "type": "record",
+  "namespace": "com.github.edgger",
+  "name": "AccountCreatedMsgV1",
+  "fields": [
+    { "name": "account_id", "type": "string" },
+    { "name": "account_role", "type": "string" }
+  ]
+}

@@ -19,7 +19,8 @@ import java.util.Map;
 @Service
 public class KafkaConsumerService {
 
-    private final EventProcessorService eventProcessorService;
+    private final AccountEventProcessorService accountEventProcessorService;
+    private final TaskEventProcessorService taskEventProcessorService;
 
     @KafkaListener(topics = {"${app.kafka.consumer.topics.account-created}"},
             groupId = "billing-service.account-created",
@@ -28,7 +29,7 @@ public class KafkaConsumerService {
                         @Headers Map<String, String> headers,
                         Acknowledgment acknowledgment) {
         log.info("=> consumed {}", payload);
-        eventProcessorService.addNewAccount(payload);
+        accountEventProcessorService.addNewAccount(payload);
         acknowledgment.acknowledge();
     }
 
@@ -38,7 +39,7 @@ public class KafkaConsumerService {
                         @Headers Map<String, String> headers,
                         Acknowledgment acknowledgment) {
         log.info("=> consumed {}", payload);
-        eventProcessorService.addNewTask(payload);
+        taskEventProcessorService.addNewTask(payload);
         acknowledgment.acknowledge();
     }
 
@@ -48,7 +49,7 @@ public class KafkaConsumerService {
                         @Headers Map<String, String> headers,
                         Acknowledgment acknowledgment) {
         log.info("=> consumed {}", payload);
-        eventProcessorService.assignTask(payload);
+        taskEventProcessorService.assignTask(payload);
         acknowledgment.acknowledge();
     }
 
@@ -58,7 +59,7 @@ public class KafkaConsumerService {
                         @Headers Map<String, String> headers,
                         Acknowledgment acknowledgment) {
         log.info("=> consumed {}", payload);
-        eventProcessorService.completeTask(payload);
+        taskEventProcessorService.completeTask(payload);
         acknowledgment.acknowledge();
     }
 }

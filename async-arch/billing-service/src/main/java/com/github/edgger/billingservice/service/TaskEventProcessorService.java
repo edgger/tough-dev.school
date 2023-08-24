@@ -18,18 +18,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 @Service
-public class EventProcessorService {
+public class TaskEventProcessorService {
 
     private AccountRepository accountRepository;
     private TaskRepository taskRepository;
-
-    public void addNewAccount(AccountCreatedMsgV1 evt) {
-        UUID accountId = UUID.fromString(evt.getAccountId().toString());
-        Account account = new Account(accountId,
-                AccountRole.valueOf(evt.getAccountRole().toString()),
-                new BigDecimal(0));
-        accountRepository.save(account);
-    }
 
     public void addNewTask(TaskCreatedMsgV1 payload) {
         //todo

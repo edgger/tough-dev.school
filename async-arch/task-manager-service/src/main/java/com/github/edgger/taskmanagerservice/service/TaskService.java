@@ -4,6 +4,7 @@ import com.github.edgger.TaskAssignedMsgV1;
 import com.github.edgger.TaskCompletedMsgV1;
 import com.github.edgger.TaskCreatedMsgV1;
 import com.github.edgger.taskmanagerservice.dto.rest.NewTaskRq;
+import com.github.edgger.taskmanagerservice.dto.rest.OpenTaskInfoRs;
 import com.github.edgger.taskmanagerservice.entity.Account;
 import com.github.edgger.taskmanagerservice.entity.Task;
 import com.github.edgger.taskmanagerservice.entity.TaskStatus;
@@ -12,6 +13,7 @@ import com.github.edgger.taskmanagerservice.repository.TaskRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final AccountRepository accountRepository;
     private final KafkaProducerService kafkaProducer;
+    private final ModelMapper modelMapper;
 
     @Transactional
     public void addNew(NewTaskRq rq) {
@@ -66,5 +69,16 @@ public class TaskService {
         task.setStatus(TaskStatus.COMPLETED);
         TaskCompletedMsgV1 evt = new TaskCompletedMsgV1(taskIdString);
         kafkaProducer.sendTaskCompletedEvent(evt);
+    }
+
+    public List<OpenTaskInfoRs> getAllByUserId(String userId) {
+        return taskRepository.findAllByAccountId(UUID.fromString(userId))
+                .stream()
+                .map(this::convertToDto)
+                .toList();
+    }
+
+    private OpenTaskInfoRs convertToDto(Task entity) {
+        return modelMapper.map(entity, OpenTaskInfoRs.class);
     }
 }

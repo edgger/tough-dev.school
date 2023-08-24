@@ -19,4 +19,6 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     @Query("update #{#entityName} t set t.account.id = :account_id where t.id = :id")
     int setAccountId(@Param("id") UUID taskId, @Param("account_id") UUID accountId);
 
+    @Query("select e from #{#entityName} e where e.accountId = :account_id")
+    List<Task> findAllByAccountId(@Param("account_id") UUID accountId);
 }

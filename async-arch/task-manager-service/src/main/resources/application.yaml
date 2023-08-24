@@ -43,6 +43,7 @@ spring:
         spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
         spring.deserializer.value.delegate.class: io.confluent.kafka.serializers.KafkaAvroDeserializer
         auto.register.schemas: true
+        specific.avro.reader: true
     listener:
       ack-mode: manual
 

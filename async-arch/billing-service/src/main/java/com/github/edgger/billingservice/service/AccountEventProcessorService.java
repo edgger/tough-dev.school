@@ -1,6 +1,7 @@
 package com.github.edgger.billingservice.service;
 
-import com.github.edgger.*;
+import com.github.edgger.AccountCreatedMsgV1;
+import com.github.edgger.AccountRoleChangedMsgV1;
 import com.github.edgger.billingservice.entity.Account;
 import com.github.edgger.billingservice.entity.AccountRole;
 import com.github.edgger.billingservice.repository.AccountRepository;

@@ -1,9 +1,6 @@
 package com.github.edgger.billingservice.service;
 
-import com.github.edgger.AccountCreatedMsgV1;
-import com.github.edgger.TaskAssignedMsgV1;
-import com.github.edgger.TaskCompletedMsgV1;
-import com.github.edgger.TaskCreatedMsgV1;
+import com.github.edgger.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -23,8 +20,7 @@ public class KafkaConsumerService {
     private final TaskEventProcessorService taskEventProcessorService;
 
     @KafkaListener(topics = {"${app.kafka.consumer.topics.account-created}"},
-            groupId = "billing-service.account-created",
-            properties = {"spring.json.value.default.type=com.github.edgger.billingservice.dto.kafka.AccountCreatedEvt"})
+            groupId = "billing-service.account-created")
     public void consume(@Payload AccountCreatedMsgV1 payload,
                         @Headers Map<String, String> headers,
                         Acknowledgment acknowledgment) {
@@ -33,9 +29,29 @@ public class KafkaConsumerService {
         acknowledgment.acknowledge();
     }
 
+    @KafkaListener(topics = {"${app.kafka.consumer.topics.account-role-changed}"},
+            groupId = "billing-service.account-created")
+    public void consume(@Payload AccountRoleChangedMsgV1 payload,
+                        @Headers Map<String, String> headers,
+                        Acknowledgment acknowledgment) {
+        log.info("=> consumed {}", payload);
+        accountEventProcessorService.changeAccountRole(payload);
+        acknowledgment.acknowledge();
+    }
+
     @KafkaListener(topics = {"${app.kafka.consumer.topics.task-created}"},
             groupId = "billing-service.task-created")
     public void consume(@Payload TaskCreatedMsgV1 payload,
+                        @Headers Map<String, String> headers,
+                        Acknowledgment acknowledgment) {
+        log.info("=> consumed {}", payload);
+        taskEventProcessorService.addNewTask(payload);
+        acknowledgment.acknowledge();
+    }
+
+    @KafkaListener(topics = {"${app.kafka.consumer.topics.task-created}"},
+            groupId = "billing-service.task-created")
+    public void consume(@Payload TaskCreatedMsgV2 payload,
                         @Headers Map<String, String> headers,
                         Acknowledgment acknowledgment) {
         log.info("=> consumed {}", payload);

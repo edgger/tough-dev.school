@@ -2,7 +2,7 @@ package com.github.edgger.taskmanagerservice.service;
 
 import com.github.edgger.TaskAssignedMsgV1;
 import com.github.edgger.TaskCompletedMsgV1;
-import com.github.edgger.TaskCreatedMsgV1;
+import com.github.edgger.TaskCreatedMsgV2;
 import com.github.edgger.taskmanagerservice.dto.rest.NewTaskRq;
 import com.github.edgger.taskmanagerservice.dto.rest.OpenTaskInfoRs;
 import com.github.edgger.taskmanagerservice.entity.Account;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.random.RandomGenerator;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -37,9 +37,14 @@ public class TaskService {
         UUID randomId = accountRepository.getRandomId()
                 .orElseThrow(() -> new IllegalStateException("Accounts is empty"));
         Account randomAccount = new Account(randomId, null);
-        Task task = new Task(null, rq.getDescription(), TaskStatus.INPROGRESS, randomAccount);
+        Task task = convertToEntity(rq);
+        task.setAccount(randomAccount);
+        task.setStatus(TaskStatus.INPROGRESS);
         task = taskRepository.save(task);
-        TaskCreatedMsgV1 evt = new TaskCreatedMsgV1(task.getId().toString(), task.getAccount().getId().toString(), task.getDescription());
+        TaskCreatedMsgV2 evt = new TaskCreatedMsgV2(task.getId().toString(),
+                task.getAccount().getId().toString(),
+                task.getDescription(),
+                task.getTitle(), task.getJiraId());
         kafkaProducer.sendTaskCreatedEvent(evt);
     }
 
@@ -49,7 +54,7 @@ public class TaskService {
         List<UUID> allWorkerIds = accountRepository.getAllWorkerIds();
         if (!allWorkerIds.isEmpty()) {
             for (UUID taskId : allTaskIds) {
-                UUID randomWorkerId = allWorkerIds.get(ThreadLocalRandom.current().nextInt(allWorkerIds.size()));
+                UUID randomWorkerId = allWorkerIds.get(RandomGenerator.getDefault().nextInt(allWorkerIds.size()));
                 taskRepository.setAccountId(taskId, randomWorkerId);
                 TaskAssignedMsgV1 evt = new TaskAssignedMsgV1(taskId.toString(), randomWorkerId.toString());
                 kafkaProducer.sendTaskAssignedEvent(evt);
@@ -76,6 +81,10 @@ public class TaskService {
                 .stream()
                 .map(this::convertToDto)
                 .toList();
+    }
+
+    private Task convertToEntity(NewTaskRq dto) {
+        return modelMapper.map(dto, Task.class);
     }
 
     private OpenTaskInfoRs convertToDto(Task entity) {

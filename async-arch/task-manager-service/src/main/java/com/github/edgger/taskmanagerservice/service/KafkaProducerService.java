@@ -2,7 +2,7 @@ package com.github.edgger.taskmanagerservice.service;
 
 import com.github.edgger.TaskAssignedMsgV1;
 import com.github.edgger.TaskCompletedMsgV1;
-import com.github.edgger.TaskCreatedMsgV1;
+import com.github.edgger.TaskCreatedMsgV2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class KafkaProducerService {
 
-    private final KafkaTemplate<String, TaskCreatedMsgV1> kafkaTemplateCreated;
+    private final KafkaTemplate<String, TaskCreatedMsgV2> kafkaTemplateCreated;
     private final KafkaTemplate<String, TaskAssignedMsgV1> kafkaTemplateAssigned;
     private final KafkaTemplate<String, TaskCompletedMsgV1> kafkaTemplateCompleted;
 
@@ -31,9 +31,9 @@ public class KafkaProducerService {
     @Value("${app.kafka.producer.topics.task-completed}")
     private String topicTaskCompleted;
 
-    public void sendTaskCreatedEvent(TaskCreatedMsgV1 evt) {
-        ProducerRecord<String, TaskCreatedMsgV1> record = new ProducerRecord<>(topicTaskCreated, evt.getTaskId().toString(), evt);
-        CompletableFuture<SendResult<String, TaskCreatedMsgV1>> future = kafkaTemplateCreated.send(record);
+    public void sendTaskCreatedEvent(TaskCreatedMsgV2 evt) {
+        ProducerRecord<String, TaskCreatedMsgV2> record = new ProducerRecord<>(topicTaskCreated, evt.getTaskId().toString(), evt);
+        CompletableFuture<SendResult<String, TaskCreatedMsgV2>> future = kafkaTemplateCreated.send(record);
         future.whenComplete((result, ex) -> {
             if (ex == null) {
                 log.info("Sent message=[" + evt +

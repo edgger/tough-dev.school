@@ -1,0 +1,8 @@
+{
+  "type": "record",
+  "namespace": "com.github.edgger",
+  "name": "TaskCompletedMsgV1",
+  "fields": [
+    { "name": "task_id", "type": "string" }
+  ]
+}

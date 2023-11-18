@@ -17,6 +17,8 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    private String title;
+    private String jiraId;
     private String description;
     @Enumerated(EnumType.STRING)
     private TaskStatus status;

@@ -8,5 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewTaskRq {
+    private String title;
+    private String jiraId;
     private String description;
 }

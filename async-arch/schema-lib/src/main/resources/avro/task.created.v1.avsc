@@ -1,0 +1,10 @@
+{
+  "type": "record",
+  "namespace": "com.github.edgger",
+  "name": "TaskCreatedMsgV1",
+  "fields": [
+    { "name": "task_id", "type": "string" },
+    { "name": "account_id", "type": "string" },
+    { "name": "description", "type": "string" }
+  ]
+}
